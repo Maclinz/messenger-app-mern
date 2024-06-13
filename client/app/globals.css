@@ -41,3 +41,18 @@ body {
 .active-nav {
   color: #7263f3;
 }
+
+.textarea {
+  max-height: 350px;
+  overflow-y: auto;
+  resize: none;
+}
+
+.textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+.textarea::-webkit-scrollbar-thumb {
+  background-color: #7263f3;
+  border-radius: 6px;
+}
