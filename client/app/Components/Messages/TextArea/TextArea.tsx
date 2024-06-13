@@ -1,15 +1,29 @@
+"use client";
 import { send } from "@/utils/Icons";
 import React, { useEffect, useRef, useState } from "react";
+import EmojiPicker from "emoji-picker-react";
+import { useChatContext } from "@/context/chatContext";
+import useDetectOutsideClick from "@/hooks/useDetectOutsideClick";
 
 function TextArea() {
+  const { selectedChat } = useChatContext();
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const emojieElemRef = useRef<HTMLDivElement>(null);
 
   const [message, setMessage] = useState("");
+  const [toggleEmoji, setToggleEmoji] = useState(false);
+
+  useDetectOutsideClick(emojieElemRef, setToggleEmoji);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
 
+  const handleToggleEmoji = () => {
+    setToggleEmoji(true);
+  };
+
+  // auto resize the textarea
   const autoResize = () => {
     const textarea = textAreaRef.current;
 
@@ -25,6 +39,11 @@ function TextArea() {
       }
     }
   };
+
+  useEffect(() => {
+    setToggleEmoji(false);
+    setMessage("");
+  }, [selectedChat]);
 
   useEffect(() => {
     autoResize();
@@ -44,6 +63,7 @@ function TextArea() {
         <button
           type="button"
           className="absolute top-[22px] right-3 text-[#aaa] translate-y-[-50%] text-2xl"
+          onClick={handleToggleEmoji}
         >
           🥹
         </button>
@@ -60,6 +80,18 @@ function TextArea() {
       >
         {send}
       </button>
+      {toggleEmoji && (
+        <div
+          ref={emojieElemRef}
+          className="absolute right-0 bottom-[72px] z-10"
+        >
+          <EmojiPicker
+            onEmojiClick={(emojiObject) => {
+              setMessage((prev: string) => prev + emojiObject.emoji);
+            }}
+          />
+        </div>
+      )}
     </form>
   );
 }
