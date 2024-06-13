@@ -1,7 +1,7 @@
 "use client";
 import { useChatContext } from "@/context/chatContext";
 import { useUserContext } from "@/context/userContext";
-import { formatDateBasedOnTime } from "@/types/dates";
+import { formatDateBasedOnTime } from "@/utils/dates";
 import { IMessage, IUser } from "@/types/type";
 import { readReceipts } from "@/utils/Icons";
 import Image from "next/image";
@@ -37,6 +37,8 @@ function ChatItem({ user, active, onClick, chatId }: ChatItemProps) {
   useEffect(() => {
     allMessages();
   }, [chatId, allMessages]);
+
+  console.log("messages", messages);
 
   const lastMessage = messages[messages.length - 1];
 

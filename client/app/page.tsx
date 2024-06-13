@@ -6,11 +6,13 @@ import Header from "./Components/Messages/Header/Header";
 import Body from "./Components/Messages/Body/Body";
 import TextArea from "./Components/Messages/TextArea/TextArea";
 import Profile from "./Components/Profile/Profile";
+import { useChatContext } from "@/context/chatContext";
 
 export default function Home() {
   useRedirect("/login");
 
   const { currentView, showFriendProfile, showProfile } = useGlobalContext();
+  const { selectedChat } = useChatContext();
 
   return (
     <div className="relative px-[10rem] py-10 h-full">
@@ -21,10 +23,10 @@ export default function Home() {
         <Sidebar />
         <div className="flex-1 flex">
           <div className="relative flex-1 border-r-2 border-white dark:border-[#3C3C3C]/60">
-            {!showProfile && <Header />}
-            {!showProfile && <Body />}
+            {!showProfile && selectedChat && <Header />}
+            {!showProfile && selectedChat && <Body />}
             <div className="absolute w-full px-4 pb-4 left-0 bottom-0">
-              {!showProfile && <TextArea />}
+              {!showProfile && selectedChat && <TextArea />}
             </div>
 
             {showProfile && (

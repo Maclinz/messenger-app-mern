@@ -16,6 +16,7 @@ export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = React.useState([]);
   const [allChatsData, setAllChatsData] = React.useState([]);
   const [selectedChat, setSelectedChat] = React.useState(null);
+  const [activeChatData, setActiveChatData] = React.useState({});
 
   const getUserById = async (id) => {
     try {
@@ -98,11 +99,26 @@ export const ChatProvider = ({ children }) => {
   //handle selected chat
   const handleSelectedChat = async (chat) => {
     setSelectedChat(chat);
+
+    // find the user that is not the current user
+    const isNotLoggedInUser = chat.participants.find(
+      (participant) => participant !== userId
+    );
+
+    const data = await getUserById(isNotLoggedInUser);
+
+    setActiveChatData(data);
   };
 
   useEffect(() => {
     fetchChats();
   }, [userId]);
+
+  useEffect(() => {
+    if (selectedChat) {
+      fetchMessages(selectedChat._id);
+    }
+  }, [selectedChat]);
 
   useEffect(() => {
     if (chats && user) {
@@ -120,6 +136,8 @@ export const ChatProvider = ({ children }) => {
         selectedChat,
         handleSelectedChat,
         fetchAllMessages,
+        fetchMessages,
+        activeChatData,
       }}
     >
       {children}
