@@ -7,6 +7,7 @@ import {
   logoutUser,
   registerUser,
   resetPassword,
+  searchUsers,
   updateUser,
   userLoginStatus,
   verifyEmail,
@@ -53,5 +54,8 @@ router.post("/reset-password/:resetPasswordToken", resetPassword);
 
 // change password ---> user must be logged in
 router.patch("/change-password", protect, changePassword);
+
+// seacrh users
+router.get("/search-users", protect, searchUsers);
 
 export default router;

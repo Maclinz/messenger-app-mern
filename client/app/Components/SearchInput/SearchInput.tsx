@@ -1,13 +1,39 @@
 "use cleint";
+import { useUserContext } from "@/context/userContext";
 import { searchIcon } from "@/utils/Icons";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import lodash from "lodash";
 
 function SearchInput() {
+  const { searchUsers, searchResults, setSearchResults } = useUserContext();
   const [search, setSearch] = useState("");
 
+  // Debounce the search function with a delay of 500ms
+  const debouncedSearchUsers = useCallback(
+    lodash.debounce((search) => {
+      searchUsers(search);
+    }, 500),
+    []
+  );
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
+    const query = e.target.value.trim();
+    setSearch(query);
+
+    if (query) {
+      debouncedSearchUsers(query);
+    } else {
+      debouncedSearchUsers.cancel();
+      setSearchResults([]);
+    }
   };
+
+  // cancel the debounce when the component unmounts
+  useEffect(() => {
+    return () => {
+      debouncedSearchUsers.cancel();
+    };
+  }, [debouncedSearchUsers]);
 
   return (
     <form>

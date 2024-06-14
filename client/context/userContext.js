@@ -21,6 +21,7 @@ export const UserContextProvider = ({ children }) => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
 
   // register user
   const registerUser = async (e) => {
@@ -355,6 +356,27 @@ export const UserContextProvider = ({ children }) => {
     }
   };
 
+  //search Users
+  const searchUsers = async (query) => {
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        `${serverUrl}/api/v1/search-users?q=${query}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      setSearchResults(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.log("Error searching users", error);
+      toast.error(error.response.data.message);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const loginStatusGetUser = async () => {
       const isLoggedIn = await userLoginStatus();
@@ -366,12 +388,6 @@ export const UserContextProvider = ({ children }) => {
 
     loginStatusGetUser();
   }, []);
-
-  useEffect(() => {
-    if (user.role === "admin") {
-      getAllUsers();
-    }
-  }, [user.role]);
 
   console.log("User State", user);
   return (
@@ -392,6 +408,9 @@ export const UserContextProvider = ({ children }) => {
         changePassword,
         allUsers,
         deleteUser,
+        searchResults,
+        searchUsers,
+        setSearchResults,
       }}
     >
       {children}

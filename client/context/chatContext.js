@@ -96,6 +96,40 @@ export const ChatProvider = ({ children }) => {
     }
   };
 
+  // send message
+  const sendMessage = async (data) => {
+    try {
+      const res = await axios.post(`${serverUrl}/api/v1/message`, data);
+
+      //update the messages state
+      setMessages((prev) => [...prev, res.data]);
+
+      // upadte the chats state
+      setChats((prevChats) => {
+        const updatedChats = prevChats.map((chat) => {
+          if (chat._id === data.chatId) {
+            return {
+              ...chat,
+              lastMessage: res.data,
+              udatedAt: new Date().toISOString(),
+            };
+          }
+
+          return chat;
+        });
+
+        //move the chat to the top of the list
+        updatedChats.sort((a, b) => {
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        });
+
+        return updatedChats;
+      });
+    } catch (error) {
+      console.log("There was error sending the message", error.message);
+    }
+  };
+
   //handle selected chat
   const handleSelectedChat = async (chat) => {
     setSelectedChat(chat);
@@ -138,6 +172,7 @@ export const ChatProvider = ({ children }) => {
         fetchAllMessages,
         fetchMessages,
         activeChatData,
+        sendMessage,
       }}
     >
       {children}

@@ -438,3 +438,38 @@ export const changePassword = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Password could not be changed!" });
   }
 });
+
+// search users
+
+export const searchUsers = asyncHandler(async (req, res) => {
+  const query = req.query.q;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 5;
+  const skip = (page - 1) * limit;
+
+  try {
+    // search users --> case insensitive ---> partial match
+
+    const users = await User.find({
+      name: { $regex: query, $options: "i" },
+    })
+      .select("-password")
+      .limit(limit)
+      .skip(skip);
+
+    // count documents for pagination
+    const totalUsers = await User.countDocuments({
+      name: { $regex: query, $options: "i" },
+    });
+
+    res.status(200).json({
+      data: users,
+      currentPage: page,
+      totalPages: Math.ceil(totalUsers / limit),
+      totalResults: totalUsers,
+    });
+  } catch (error) {
+    console.log("Error searching users: ", error);
+    res.status(500).json({ message: "Error searching users" });
+  }
+});

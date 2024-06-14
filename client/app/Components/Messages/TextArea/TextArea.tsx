@@ -4,9 +4,12 @@ import React, { useEffect, useRef, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { useChatContext } from "@/context/chatContext";
 import useDetectOutsideClick from "@/hooks/useDetectOutsideClick";
+import { useUserContext } from "@/context/userContext";
 
 function TextArea() {
-  const { selectedChat } = useChatContext();
+  const { selectedChat, sendMessage, activeChatData } = useChatContext();
+  const user = useUserContext().user;
+
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const emojieElemRef = useRef<HTMLDivElement>(null);
 
@@ -50,7 +53,18 @@ function TextArea() {
   }, [message]);
 
   return (
-    <form className="relative flex items-center">
+    <form
+      className="relative flex items-center"
+      onSubmit={(e) => {
+        e.preventDefault();
+        sendMessage({
+          sender: user?._id,
+          receiver: activeChatData?._id,
+          content: message,
+          chatId: selectedChat?._id,
+        });
+      }}
+    >
       <div className="relative flex-1">
         <textarea
           className="textarea w-full px-4 py-3 border-2 rounded-[30px] border-white bg-[#F6F5F9] dark:bg-[#262626] dark:text-gray-100 text-[#12181b] dark:border-[#3C3C3C]/65 
