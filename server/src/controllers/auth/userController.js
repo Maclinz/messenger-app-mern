@@ -440,7 +440,6 @@ export const changePassword = asyncHandler(async (req, res) => {
 });
 
 // search users
-
 export const searchUsers = asyncHandler(async (req, res) => {
   const query = req.query.q;
   const page = parseInt(req.query.page) || 1;
@@ -471,5 +470,77 @@ export const searchUsers = asyncHandler(async (req, res) => {
   } catch (error) {
     console.log("Error searching users: ", error);
     res.status(500).json({ message: "Error searching users" });
+  }
+});
+
+// friend request
+export const friendRequest = asyncHandler(async (req, res) => {
+  try {
+    const requestingUser = req.user._id;
+
+    const { recipientId } = req.body;
+
+    // recipient user id
+    const recipient = await User.findById(recipientId);
+
+    // check if the recipient user exists
+    if (!recipient) {
+      return res.status(404).json({ message: "Recipient not found" });
+    }
+
+    // check if the requesting user is already friends with the recipient
+    if (recipient.friends.includes(requestingUser)) {
+      return res.status(400).json({ message: "Already friends" });
+    }
+
+    // check if the requesting user has already sent a friend request
+    if (recipient.friendRequests.includes(requestingUser)) {
+      return res.status(400).json({ message: "Friend request already sent" });
+    }
+
+    //send friend request
+    recipient.friendRequests.push(requestingUser);
+    await recipient.save();
+
+    res.status(200).json({ message: "Friend request sent" });
+  } catch (error) {
+    console.log("Error sending friend request: ", error);
+    res.status(500).json({ message: "Error sending friend request" });
+  }
+});
+
+//accept friend request
+export const acceptFriendRequest = asyncHandler(async (req, res) => {
+  try {
+    const recipientId = req.user._id;
+    const { requestingUserId } = req.body;
+
+    // find both users
+    const recipient = await User.findById(recipientId);
+    const requestingUser = await User.findById(requestingUserId);
+
+    if (!recipient || !requestingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // check if the friend request exists
+    const requestIndex = recipient.friendRequests.indexOf(requestingUserId);
+
+    if (requestIndex === -1) {
+      return res.status(400).json({ message: "Friend request not found" });
+    }
+
+    // add the sender to the recipient's friends list and remove from friend requests
+    recipient.friends.push(requestingUserId);
+    requestingUser.friends.push(recipientId);
+    recipient.friendRequests.splice(requestIndex, 1);
+
+    await recipient.save();
+    await requestingUser.save();
+
+    res.status(200).json({ message: "Friend request accepted" });
+  } catch (error) {
+    console.log("Error accepting friend request: ", error);
+    res.status(500).json({ message: "Error accepting friend request" });
   }
 });

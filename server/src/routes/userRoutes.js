@@ -1,7 +1,9 @@
 import express from "express";
 import {
+  acceptFriendRequest,
   changePassword,
   forgotPassword,
+  friendRequest,
   getUser,
   loginUser,
   logoutUser,
@@ -57,5 +59,11 @@ router.patch("/change-password", protect, changePassword);
 
 // seacrh users
 router.get("/search-users", protect, searchUsers);
+
+//friend request
+router.post("/friend-request", protect, friendRequest);
+
+// accept friend request
+router.post("/friends/accept", protect, acceptFriendRequest);
 
 export default router;

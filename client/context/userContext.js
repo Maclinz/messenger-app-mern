@@ -377,6 +377,45 @@ export const UserContextProvider = ({ children }) => {
     }
   };
 
+  //send friend request
+  const sendFriendRequest = async (id) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${serverUrl}/api/v1/friend-request`, id, {
+        withCredentials: true,
+      });
+
+      toast.success("Friend request sent successfully");
+
+      setLoading(false);
+      return res.data;
+    } catch (error) {
+      console.log("Error sending friend request", error);
+      toast.error(error.response.data.message);
+      setLoading(false);
+    }
+  };
+
+  //accept friend request
+  const acceptFriendRequest = async (id) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${serverUrl}/api/v1/friends/accept`, id, {
+        withCredentials: true,
+      });
+
+      toast.success("Friend request accepted successfully");
+      // refresh the user details
+      getUser();
+
+      setLoading(false);
+    } catch (error) {
+      console.log("Error accepting friend request", error);
+      toast.error(error.response.data.message);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const loginStatusGetUser = async () => {
       const isLoggedIn = await userLoginStatus();
@@ -411,6 +450,8 @@ export const UserContextProvider = ({ children }) => {
         searchResults,
         searchUsers,
         setSearchResults,
+        sendFriendRequest,
+        acceptFriendRequest,
       }}
     >
       {children}
