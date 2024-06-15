@@ -88,7 +88,7 @@ function ChatItem({ user, active, onClick, chatId }: ChatItemProps) {
           {lastMessage?.sender === userId ? (
             <div className="text-[#7263f3]">{readReceipts}</div>
           ) : (
-            <div></div>
+            <div className="flex items-center justify-center w-[4px] h-[4px] bg-red-500 rounded-full"></div>
           )}
         </div>
       </div>

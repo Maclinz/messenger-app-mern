@@ -1,18 +1,40 @@
 import { useChatContext } from "@/context/chatContext";
 import { useUserContext } from "@/context/userContext";
 import { IMessage } from "@/types/type";
-import React from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import Sender from "../Sender/Sender";
 import Recever from "../Receiver/Recever";
 
 function Body() {
+  const messageBodyRef = useRef(null) as any;
+
   const { messages } = useChatContext();
   const userId = useUserContext().user?._id;
 
-  console.log("User Id", userId);
-  console.log("Messages", messages);
+  const scrollToBottom = (behavior: string = "smooth") => {
+    if (messageBodyRef.current) {
+      messageBodyRef.current.scrollTo({
+        top: messageBodyRef.current.scrollHeight,
+        behavior,
+      });
+    }
+  };
+
+  // scroll to bottom on initial page load
+  useLayoutEffect(() => {
+    scrollToBottom("auto");
+  }, []);
+
+  // scroll to bottom on when a new message is sent
+  useEffect(() => {
+    scrollToBottom("auto");
+  }, [messages]);
+
   return (
-    <div className="message-body relative flex-1 p-4 overflow-y-auto">
+    <div
+      ref={messageBodyRef}
+      className="message-body relative flex-1 p-4 overflow-y-auto"
+    >
       <div className="relative flex flex-col">
         {messages.map((message: IMessage) =>
           message.sender === userId ? (

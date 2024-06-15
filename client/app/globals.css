@@ -56,3 +56,47 @@ body {
   background-color: #7263f3;
   border-radius: 6px;
 }
+
+.message-body {
+  height: calc(100% - 152px);
+  overflow-y: auto;
+  resize: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.message-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.message-body::-webkit-scrollbar-thumb {
+  background-color: #7263f3;
+  border-radius: 6px;
+}
+
+.epr-main {
+  background: linear-gradient(to bottom, #faf3f7, #f5f7f9) !important;
+  border: 2px solid #fff !important;
+  box-shadow: 2px 3px 5px rgba(0, 0, 0, 0.05) !important;
+}
+
+.epr-search-container > input {
+  background: #fff !important;
+  border: 2px solid #e5e7eb !important;
+}
+
+.epr-main > div:last-child {
+  display: none !important;
+}
+
+.epr-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.epr-body::-webkit-scrollbar-thumb {
+  background-color: #7263f3;
+  border-radius: 6px;
+}
+
+.epr-body::-webkit-scrollbar-track {
+  border-radius: 6px;
+}

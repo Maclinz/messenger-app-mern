@@ -63,6 +63,7 @@ function TextArea() {
           content: message,
           chatId: selectedChat?._id,
         });
+        setMessage("");
       }}
     >
       <div className="relative flex-1">
