@@ -447,10 +447,12 @@ export const searchUsers = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    // search users --> case insensitive ---> partial match
+    const userId = req.user._id;
 
+    // search users --> case insensitive ---> partial match
     const users = await User.find({
       name: { $regex: query, $options: "i" },
+      _id: { $ne: userId },
     })
       .select("-password")
       .limit(limit)
@@ -459,6 +461,7 @@ export const searchUsers = asyncHandler(async (req, res) => {
     // count documents for pagination
     const totalUsers = await User.countDocuments({
       name: { $regex: query, $options: "i" },
+      _id: { $ne: userId },
     });
 
     res.status(200).json({

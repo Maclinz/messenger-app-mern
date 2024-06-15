@@ -1,6 +1,7 @@
 import axios, { all } from "axios";
 import React, { useEffect } from "react";
 import { useUserContext } from "./userContext";
+import { useRouter } from "next/navigation";
 
 const ChatContext = React.createContext();
 
@@ -10,6 +11,8 @@ export const ChatProvider = ({ children }) => {
   const { user } = useUserContext();
 
   const userId = user?._id;
+
+  const router = useRouter();
 
   //state
   const [chats, setChats] = React.useState([]);
@@ -144,6 +147,27 @@ export const ChatProvider = ({ children }) => {
     setActiveChatData(data);
   };
 
+  // logout user
+  const logoutUser = async () => {
+    try {
+      const res = await axios.get(`${serverUrl}/api/v1/logout`);
+
+      // clear all the states
+      setChats([]);
+      setMessages([]);
+      setAllChatsData([]);
+      setSelectedChat(null);
+      setActiveChatData({});
+
+      toast.success("You have been logged out");
+
+      // redirect to login page
+      router.push("/login");
+    } catch (error) {
+      console.log("Error in logoutUser", error.message);
+    }
+  };
+
   useEffect(() => {
     fetchChats();
   }, [userId]);
@@ -173,6 +197,7 @@ export const ChatProvider = ({ children }) => {
         fetchMessages,
         activeChatData,
         sendMessage,
+        logoutUser,
       }}
     >
       {children}

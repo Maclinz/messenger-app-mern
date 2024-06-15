@@ -72,7 +72,12 @@ function Sidebar() {
   return (
     <div className="w-[25rem] flex border-r-2 border-white dark:border-[#3C3C3C]/60">
       <div className="p-4 flex flex-col justify-between items-center border-r-2 border-white dark:border-[#3C3C3C]/60">
-        <div className="profile flex flex-col items-center">
+        <div
+          className="profile flex flex-col items-center"
+          onClick={() => {
+            handleProfileToggle(true);
+          }}
+        >
           <Image
             src={photo}
             alt="profile"
@@ -107,7 +112,7 @@ function Sidebar() {
             );
           })}
         </div>
-        <div className="px-2 py1 text-[#454e56] text-xl flex flex-col gap-2 border-2 border-white dark:border-[#3C3C3C]/65 rounded-[30px] shadow-sm dark:text-white/65">
+        <div className="p-2 text-[#454e56] text-xl flex flex-col gap-2 border-2 border-white dark:border-[#3C3C3C]/65 rounded-[30px] shadow-sm dark:text-white/65">
           <button
             className={`${
               user?.theme === "light"
@@ -129,7 +134,7 @@ function Sidebar() {
       </div>
       <div className="pb-4 flex-1">
         <h2
-          className={`px-4 mt-2 font-bold text-2xl ${gradientText} dark:text-white`}
+          className={`px-4 mt-6 font-bold text-2xl ${gradientText} dark:text-white`}
         >
           Messages
         </h2>

@@ -30,7 +30,7 @@ export default function Home() {
             </div>
 
             {showProfile && (
-              <div className="flex flex-col items-center justify-cente h-full">
+              <div className="flex flex-col items-center justify-center h-full">
                 <Profile />
               </div>
             )}
