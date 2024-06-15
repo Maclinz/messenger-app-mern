@@ -7,6 +7,8 @@ import Body from "./Components/Messages/Body/Body";
 import TextArea from "./Components/Messages/TextArea/TextArea";
 import Profile from "./Components/Profile/Profile";
 import { useChatContext } from "@/context/chatContext";
+import FriendProfile from "./Components/FriendProfile/FriendProfile";
+import Online from "./Components/Online/Online";
 
 export default function Home() {
   useRedirect("/login");
@@ -35,7 +37,10 @@ export default function Home() {
               </div>
             )}
           </div>
-          <div className="w-[30%]"></div>
+          <div className="w-[30%]">
+            {!showFriendProfile && <Online />}
+            {showFriendProfile && <FriendProfile />}
+          </div>
         </div>
       </main>
     </div>
