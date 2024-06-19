@@ -13,6 +13,7 @@ interface IRecever {
 function Recever({ messageId, content, createdAt }: IRecever) {
   const { activeChatData } = useChatContext();
   const { photo, name } = activeChatData || {};
+
   return (
     <div className="mb-2">
       <div className="flex gap-3">

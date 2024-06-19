@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 
 function FriendRequests() {
   const { user, acceptFriendRequest } = useUserContext();
-  const { getUserById } = useChatContext();
+  const { getUserById, createChat } = useChatContext();
 
   const { friendRequests } = user;
 
@@ -44,7 +44,7 @@ function FriendRequests() {
       {requests.length > 0 && (
         <div>
           {sortedRequests.map((request: IUser) => {
-            const { friends } = user;
+            const { friends } = request;
             return (
               <div
                 key={request._id}
@@ -79,6 +79,8 @@ function FriendRequests() {
                       acceptFriendRequest({
                         requestingUserId: request._id,
                       });
+
+                      createChat(user._id, request._id);
                     }}
                   >
                     {check}

@@ -1,14 +1,14 @@
 import { useChatContext } from "@/context/chatContext";
 import { useUserContext } from "@/context/userContext";
 import { IMessage } from "@/types/type";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { use, useEffect, useLayoutEffect, useRef } from "react";
 import Sender from "../Sender/Sender";
 import Recever from "../Receiver/Recever";
 
 function Body() {
   const messageBodyRef = useRef(null) as any;
 
-  const { messages } = useChatContext();
+  const { messages, arrivedMessage } = useChatContext();
   const userId = useUserContext().user?._id;
 
   const scrollToBottom = (behavior: string = "smooth") => {
@@ -24,6 +24,12 @@ function Body() {
   useLayoutEffect(() => {
     scrollToBottom("auto");
   }, []);
+
+  useEffect(() => {
+    if (arrivedMessage && arrivedMessage.sender !== userId) {
+      scrollToBottom("smooth");
+    }
+  }, [arrivedMessage]);
 
   // scroll to bottom on when a new message is sent
   useEffect(() => {

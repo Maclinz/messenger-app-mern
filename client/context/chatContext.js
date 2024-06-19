@@ -2,6 +2,7 @@ import axios, { all } from "axios";
 import React, { useEffect } from "react";
 import { useUserContext } from "./userContext";
 import { useRouter } from "next/navigation";
+import io from "socket.io-client";
 
 const ChatContext = React.createContext();
 
@@ -20,6 +21,92 @@ export const ChatProvider = ({ children }) => {
   const [allChatsData, setAllChatsData] = React.useState([]);
   const [selectedChat, setSelectedChat] = React.useState(null);
   const [activeChatData, setActiveChatData] = React.useState({});
+  const [socket, setSocket] = React.useState(null);
+  const [onlineUsers, setOnlineUsers] = React.useState([]);
+  const [arrivedMessage, setArrivedMessage] = React.useState(null);
+
+  useEffect(() => {
+    // create a socket connection
+    const newSocket = io(serverUrl);
+
+    newSocket.on("connect", () => {
+      console.log("Connected to the server");
+    });
+
+    newSocket.on("disconnect", (reason) => {
+      console.log("Disconnected from the server", reason);
+    });
+
+    setSocket(newSocket);
+
+    // cleanup when component unmounts
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    // prevent emmiting the events if the user is not logged in
+    if (!user) return;
+
+    socket?.emit("add user", user._id);
+    // listen for changes in the users
+    socket?.on("get users", (users) => {
+      // fetch all online users
+      const getOnlineUsers = async () => {
+        try {
+          const usersOnline = await Promise.all(
+            users.map(async (user) => {
+              const userData = await getUserById(user.userId);
+              return userData;
+            })
+          );
+
+          // remove the current user from the list
+          const onlineFriends = usersOnline.filter(
+            (user) => user._id !== userId
+          );
+
+          // check if the current user if friends with the online users
+          const isFriends = onlineFriends.filter((friend) =>
+            user.friends.includes(friend._id)
+          );
+
+          setOnlineUsers(isFriends);
+        } catch (error) {
+          console.log("Error in getting Online Users", error.message);
+        }
+      };
+
+      getOnlineUsers();
+    });
+
+    // listen for new messages
+    socket?.on("get message", (data) => {
+      setArrivedMessage({
+        sender: data.senderId,
+        content: data.text,
+        createdAt: Date.now(),
+      });
+    });
+
+    return () => {
+      socket?.off("get users");
+      socket?.off("get message");
+    };
+  }, [user]);
+
+  useEffect(() => {
+    // check if the arrived message is from a participant in the selected chat
+    if (
+      arrivedMessage &&
+      selectedChat &&
+      selectedChat.participants.includes(arrivedMessage.sender)
+    ) {
+      // update the messages state
+      setMessages((prev) => [...prev, arrivedMessage]);
+    }
+  }, [arrivedMessage, selectedChat?._id]);
 
   const getUserById = async (id) => {
     try {
@@ -114,7 +201,7 @@ export const ChatProvider = ({ children }) => {
             return {
               ...chat,
               lastMessage: res.data,
-              udatedAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
             };
           }
 
@@ -128,6 +215,15 @@ export const ChatProvider = ({ children }) => {
 
         return updatedChats;
       });
+
+      // emit the message to the receiver
+      socket.emit("send message", {
+        senderId: data.sender,
+        receiverId: activeChatData._id,
+        text: data.content,
+      });
+
+      return res.data;
     } catch (error) {
       console.log("There was error sending the message", error.message);
     }
@@ -147,6 +243,25 @@ export const ChatProvider = ({ children }) => {
     setActiveChatData(data);
   };
 
+  // create a new chat
+  const createChat = async (senderId, receiverId) => {
+    try {
+      const res = await axios.post(`${serverUrl}/api/v1/chats`, {
+        senderId,
+        receiverId,
+      });
+
+      alert("Chat created successfully");
+
+      // update the chats state
+      setChats((prev) => [...prev, res.data]);
+
+      return res.data;
+    } catch (error) {
+      console.log("Error in createChat", error.message);
+    }
+  };
+
   // logout user
   const logoutUser = async () => {
     try {
@@ -158,6 +273,9 @@ export const ChatProvider = ({ children }) => {
       setAllChatsData([]);
       setSelectedChat(null);
       setActiveChatData({});
+      setOnlineUsers([]);
+      setSocket(null);
+      setArrivedMessage(null);
 
       toast.success("You have been logged out");
 
@@ -198,6 +316,10 @@ export const ChatProvider = ({ children }) => {
         activeChatData,
         sendMessage,
         logoutUser,
+        onlineUsers,
+        socket,
+        setOnlineUsers,
+        createChat,
       }}
     >
       {children}

@@ -9,6 +9,9 @@ import React from "react";
 function FriendProfile() {
   const { activeChatData } = useChatContext();
   const { handleFriendProfile, showFriendProfile } = useGlobalContext();
+
+  const { photo } = activeChatData || {};
+
   return (
     <div className="py-4 h-full flex flex-col justify-between">
       <div className="flex flex-col items-center">
@@ -22,7 +25,7 @@ function FriendProfile() {
           <span className="text-[16px] font-medium">Contact Info</span>
         </button>
         <Image
-          src={activeChatData?.photo}
+          src={photo}
           alt="Profile Picture"
           width={200}
           height={200}

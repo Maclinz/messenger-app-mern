@@ -6,6 +6,7 @@ import { IMessage, IUser } from "@/types/type";
 import { readReceipts } from "@/utils/Icons";
 import Image from "next/image";
 import React, { useCallback, useEffect, useState } from "react";
+import { on } from "events";
 
 interface ChatItemProps {
   user: IUser;
@@ -15,8 +16,8 @@ interface ChatItemProps {
 }
 
 function ChatItem({ user, active, onClick, chatId }: ChatItemProps) {
-  const { fetchAllMessages } = useChatContext();
-  const { photo, name, lastSeen } = user;
+  const { fetchAllMessages, onlineUsers } = useChatContext();
+  const { photo } = user;
 
   const userId = useUserContext().user._id;
 
@@ -38,11 +39,11 @@ function ChatItem({ user, active, onClick, chatId }: ChatItemProps) {
     allMessages();
   }, [chatId, allMessages]);
 
-  console.log("messages", messages);
-
   const lastMessage = messages[messages.length - 1];
 
-  const isUserOnline = true;
+  const isUserOnline = onlineUsers?.find(
+    (onlineUser: IUser) => onlineUser._id === user._id
+  );
   return (
     <div
       className={`px-4 py-3 flex gap-2 items-center border-b-2 border-white dark:border-[#3C3C3C]/65 cursor-pointer ${
@@ -62,7 +63,7 @@ function ChatItem({ user, active, onClick, chatId }: ChatItemProps) {
 
         <div
           className={`absolute bottom-0 right-0 w-[13px] h-[13px] rounded-full border-white border-2
-            ${isUserOnline ? "bg-green-500" : "bg-red-500]"}
+            ${isUserOnline ? "bg-green-500" : "bg-red-500"}
         `}
         ></div>
       </div>

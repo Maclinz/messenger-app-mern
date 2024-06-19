@@ -10,7 +10,7 @@ function RegisterForm() {
   const togglePassword = () => setShowPassword(!showPassword);
 
   return (
-    <form className="register-form relative m-[2rem] px-10 py-14 rounded-lg bg-white w-full max-w-[520px]">
+    <form className="auth-form relative m-[2rem] px-10 py-14 rounded-lg bg-white w-full max-w-[520px]">
       <div className="relative z-10">
         <h1 className="mb-2 text-center text-[1.35rem] font-medium">
           Register for an Account

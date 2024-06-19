@@ -1,10 +1,13 @@
 import { useUserContext } from "@/context/userContext";
+import { useEdgeStore } from "@/lib/edgestore";
 import { logout } from "@/utils/Icons";
 import { gradientText } from "@/utils/TaiwindStyles";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Profile() {
+  const { edgestore } = useEdgeStore();
+
   const { updateUser, changePassword, logoutUser } = useUserContext();
 
   const photo = useUserContext().user?.photo;
@@ -15,6 +18,7 @@ function Profile() {
   const [localName, setLocalName] = useState(name);
   const [localOldPassword, setLocalOldPassword] = useState("");
   const [localNewPassword, setLocalNewPassword] = useState("");
+  const [file, setFile] = useState<File>();
 
   const handleInput = (name: string) => (e: any) => {
     switch (name) {
@@ -34,6 +38,25 @@ function Profile() {
         break;
     }
   };
+
+  const handleUploadImage = async () => {
+    if (file) {
+      const res = await edgestore.publicFiles.upload({
+        file,
+        options: {
+          temporary: false, // delete the file after 24 hours
+        },
+      });
+
+      const { url } = res;
+
+      updateUser({ photo: url });
+    }
+  };
+
+  useEffect(() => {
+    handleUploadImage();
+  }, [file]);
 
   return (
     <div className="px-4 pb-8 w-[90%]">
@@ -58,6 +81,10 @@ function Profile() {
             type="file"
             name="file"
             id="file"
+            onChange={(e) => {
+              // @ts-ignore
+              setFile(e.target?.files[0]);
+            }}
             className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
           />
 
@@ -85,7 +112,7 @@ function Profile() {
               id="name"
               defaultValue={localName}
               onChange={handleInput("name")}
-              className="w-full pl-4 p-2 rounded-md bg-blue-100 shadow-sm border-2 border-[white] focus:outline-none focus:ring-2 focus:ring-[#7263f3] focus:border-transparent
+              className="w-full pl-4 p-2 rounded-md bg-transparent shadow-sm border-2 border-[white] focus:outline-none focus:ring-2 focus:ring-[#7263f3] focus:border-transparent
              dark:bg-[#3C3C3C]/65 dark:border-[#3C3C3C]/65"
             />
           </div>
@@ -102,7 +129,7 @@ function Profile() {
               rows={3}
               defaultValue={localBio}
               onChange={handleInput("bio")}
-              className="w-full pl-4 p-2 rounded-md bg-blue-100 dark:bg-[#3C3C3C]/65 resize-none
+              className="w-full pl-4 p-2 rounded-md bg-transparent dark:bg-[#3C3C3C]/65 resize-none
               dark:border-[#3C3C3C]/65 shadow-sm border-2 border-[white] focus:outline-none focus:ring-2 focus:ring-[#7263f3] focus:border-transparent"
             ></textarea>
           </div>
@@ -140,7 +167,7 @@ function Profile() {
                 id="oldPassword"
                 value={localOldPassword}
                 onChange={handleInput("oldPassword")}
-                className="w-full pl-4 p-2 rounded-md bg-blue-100 shadow-sm border-2 border-[white] focus:outline-none focus:ring-2 focus:ring-[#7263f3] focus:border-transparent
+                className="w-full pl-4 p-2 rounded-md bg-transparent shadow-sm border-2 border-[white] focus:outline-none focus:ring-2 focus:ring-[#7263f3] focus:border-transparent
               dark:bg-[#3C3C3C]/65 dark:border-[#3C3C3C]/65"
               />
             </div>
@@ -157,7 +184,7 @@ function Profile() {
                 id="newPassword"
                 value={localNewPassword}
                 onChange={handleInput("newPassword")}
-                className="w-full pl-4 p-2 rounded-md bg-blue-100 shadow-sm border-2 border-[white] focus:outline-none focus:ring-2 focus:ring-[#7263f3] focus:border-transparent
+                className="w-full pl-4 p-2 rounded-md bg-transparent shadow-sm border-2 border-[white] focus:outline-none focus:ring-2 focus:ring-[#7263f3] focus:border-transparent
               dark:bg-[#3C3C3C]/65 dark:border-[#3C3C3C]/65"
               />
             </div>
@@ -172,7 +199,7 @@ function Profile() {
         <div className="pt-4 self-center">
           <button
             onClick={() => logoutUser()}
-            className="flex items-center bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-300 ease-in-out"
+            className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors duration-300 ease-in-out"
           >
             {logout} Logout
           </button>

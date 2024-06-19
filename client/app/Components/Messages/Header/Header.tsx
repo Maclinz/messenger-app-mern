@@ -1,19 +1,42 @@
 import { useChatContext } from "@/context/chatContext";
 import { useGlobalContext } from "@/context/globalContext";
+import { IUser } from "@/types/type";
 import { dots, searchIcon } from "@/utils/Icons";
 import { formatDateLastSeen } from "@/utils/dates";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 
 function Header() {
-  const { activeChatData } = useChatContext();
+  const { activeChatData, onlineUsers, socket, setOnlineUsers } =
+    useChatContext();
   const { handleFriendProfile, showFriendProfile } = useGlobalContext();
 
   const { photo, lastSeen } = activeChatData || {};
 
-  const isOnline = true;
+  // check if active chat user is online
+  const isOnline = onlineUsers?.find(
+    (user: IUser) => user?._id === activeChatData?._id
+  );
 
-  console.log(photo, lastSeen);
+  useEffect(() => {
+    socket?.on("user disconnected", (updatedUser: IUser) => {
+      // update the online users state
+      setOnlineUsers((prev: IUser[]) => {
+        prev.filter((user: IUser) => user._id !== updatedUser._id);
+      });
+
+      // if the user is disconnected, update their last seen status
+      if (activeChatData?._id === updatedUser._id) {
+        activeChatData.lastSeen = updatedUser.lastSeen;
+      }
+    });
+
+    //cleanup
+    return () => {
+      socket?.off("user disconnected");
+    };
+  }, [socket, activeChatData, setOnlineUsers]);
+
   return (
     <div className="p-4 flex justify-between border-b-2 border-white dark:border-[#3C3C3C]/60">
       <div
