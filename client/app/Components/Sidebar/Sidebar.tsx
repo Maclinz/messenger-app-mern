@@ -93,7 +93,7 @@ function Sidebar() {
               <button
                 key={btn.id}
                 className={`${
-                  activeNav === i ? "active-nav dark:text-[#7263f3]" : ""
+                  activeNav === i ? `active-nav dark:${gradientText}` : ""
                 } relative p-1 flex items-center text-[#454e56] dark:text-white/65`}
                 onClick={() => {
                   setActiveNav(btn.id);
