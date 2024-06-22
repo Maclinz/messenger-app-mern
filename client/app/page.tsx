@@ -9,6 +9,7 @@ import Profile from "./Components/Profile/Profile";
 import { useChatContext } from "@/context/chatContext";
 import FriendProfile from "./Components/FriendProfile/FriendProfile";
 import Online from "./Components/Online/Online";
+import MainContent from "./Components/MainContent/MainContent";
 
 export default function Home() {
   useRedirect("/login");
@@ -25,6 +26,9 @@ export default function Home() {
         <Sidebar />
         <div className="flex-1 flex">
           <div className="relative flex-1 border-r-2 border-white dark:border-[#3C3C3C]/60">
+            {/* Default Content */}
+            {!selectedChat && <MainContent />}
+
             {!showProfile && selectedChat && <Header />}
             {!showProfile && selectedChat && <Body />}
             <div className="absolute w-full px-4 pb-4 left-0 bottom-0">
