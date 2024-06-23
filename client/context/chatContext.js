@@ -9,7 +9,7 @@ const ChatContext = React.createContext();
 const serverUrl = "http://localhost:5000";
 
 export const ChatProvider = ({ children }) => {
-  const { user } = useUserContext();
+  const { user, setSearchResults, setUser } = useUserContext();
 
   const userId = user?._id;
 
@@ -274,6 +274,8 @@ export const ChatProvider = ({ children }) => {
       setOnlineUsers([]);
       setSocket(null);
       setArrivedMessage(null);
+      setSearchResults([]);
+      setUser(null);
 
       toast.success("You have been logged out");
 

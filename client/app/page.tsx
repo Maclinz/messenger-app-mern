@@ -27,7 +27,7 @@ export default function Home() {
         <div className="flex-1 flex">
           <div className="relative flex-1 border-r-2 border-white dark:border-[#3C3C3C]/60">
             {/* Default Content */}
-            {!selectedChat && <MainContent />}
+            {!showProfile && !selectedChat && <MainContent />}
 
             {!showProfile && selectedChat && <Header />}
             {!showProfile && selectedChat && <Body />}
