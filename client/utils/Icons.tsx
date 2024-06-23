@@ -20,3 +20,4 @@ export const block = <i className="fa-solid fa-ban"></i>;
 export const info = <i className="fa-solid fa-circle-info"></i>;
 export const logout = <i className="fa-solid fa-right-from-bracket"></i>;
 export const readReceipts = <i className="fa-solid fa-check-double"></i>;
+export const lock = <i className="fa-solid fa-lock"></i>;

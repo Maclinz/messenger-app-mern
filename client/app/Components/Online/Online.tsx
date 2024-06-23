@@ -26,6 +26,13 @@ function Online() {
         Online Friends
       </h2>
 
+      <p
+        className={`px-4 mt-1 text-sm font-medium text-gray-600 dark:text-gray-300`}
+      >
+        {onlineUsers?.length} {onlineUsers?.length === 1 ? "Friend" : "Friends"}{" "}
+        Online
+      </p>
+
       <div className="mt-2 mx-4">
         {onlineUsers?.map((user: IUser) => {
           return (
