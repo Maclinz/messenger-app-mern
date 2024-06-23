@@ -251,8 +251,6 @@ export const ChatProvider = ({ children }) => {
         receiverId,
       });
 
-      alert("Chat created successfully");
-
       // update the chats state
       setChats((prev) => [...prev, res.data]);
 
