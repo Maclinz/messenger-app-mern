@@ -8,7 +8,13 @@ function MainContent() {
     <div className="h-full flex  flex-col justify-center items-center">
       <div className="mt-auto flex flex-col gap-4">
         <div className="flex justify-center items-center">
-          <Image src="/logo.png" alt="Chat App" width={120} height={120} />
+          <Image
+            className="drop-shadow-lg"
+            src="/logo.png"
+            alt="Chat App"
+            width={120}
+            height={120}
+          />
         </div>
 
         <div className="flex flex-col gap-4">
